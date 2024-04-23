@@ -1,3 +1,4 @@
+import com.example.myapplication.QuoteModel
 import retrofit2.Response
 import retrofit2.http.GET
 

@@ -6,7 +6,7 @@ import retrofit2.create
 object RetrofitInstance {
     private const val BASE_URL = "https://zenquotes.io/api/"
 
-    fun getInstance(): Retrofit {
+    private fun getInstance(): Retrofit {
         return Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())

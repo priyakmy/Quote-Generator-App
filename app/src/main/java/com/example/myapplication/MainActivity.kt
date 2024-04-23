@@ -1,56 +1,81 @@
 package com.example.myapplication
 
-import QuoteApi
-import RetrofitInstance
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.Toast
 import com.example.myapplication.databinding.ActivityMainBinding
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
 
+    lateinit var binding : ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         getQuote()
+
+        binding.nextBtn.setOnClickListener {
+            getQuote()
+        }
+
     }
 
-    private fun getQuote() {
+    private fun getQuote(){
         setInProgress(true)
+
         GlobalScope.launch {
-            try {
+            try{
                 val response = RetrofitInstance.quoteApi.getRandomQuotes()
-                if (response.isSuccessful) {
-                    val quote = response.body()?.firstOrNull()
-                    quote?.let { setUI(it) }
-                } else {
-                    // Handle unsuccessful response
+                runOnUiThread {
+                    setInProgress(false)
+                    response.body()?.first()?.let {
+                        setUI(it)
+                    }
                 }
-            } catch (e: Exception) {
-                // Handle exception
-            } finally {
-                setInProgress(false)
+
+            }catch (e : Exception){
+                runOnUiThread {
+                    setInProgress(false)
+                    Toast.makeText(applicationContext,"Something went wrong",Toast.LENGTH_SHORT).show()
+                }
             }
         }
+
     }
 
-    private fun setUI(quote: QuoteApi) {
+    private fun setUI(quote : QuoteModel){
         binding.quoteTv.text = quote.q
         binding.authorTv.text = quote.a
     }
 
-    private fun setInProgress(inProgress: Boolean) {
-        if (inProgress) {
+    private fun setInProgress(inProgress : Boolean){
+        if(inProgress){
             binding.progressbar.visibility = View.VISIBLE
             binding.nextBtn.visibility = View.GONE
-        } else {
+        }else{
             binding.progressbar.visibility = View.GONE
             binding.nextBtn.visibility = View.VISIBLE
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
